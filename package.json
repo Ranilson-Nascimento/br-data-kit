@@ -1,6 +1,6 @@
 {
   "name": "br-data-kit",
-  "version": "0.2.0",
+  "version": "1.0.0",
   "description": "Utilit\u00e1rios BR: CPF/CNPJ (validar/m\u00e1scara), CEP/CNPJ lookup com fallback e cache, formatos BRL/telefone, hooks RN e CLI.",
   "license": "MIT",
   "author": "Ranilson Nascimento & Contributors",
