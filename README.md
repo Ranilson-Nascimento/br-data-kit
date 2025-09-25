@@ -52,6 +52,11 @@ const municipiosSP = await fetchMunicipios("SP");
 const boletoInfo = parseBoleto("34191.79001 01043.510047 91020.150008 3 95500000002000");
 // { valor: 2000, vencimento: Date, ... }
 
+// Datasets
+import { datasets } from "br-data-kit";
+console.log(datasets.ddd);    // Lista de códigos DDD
+console.log(datasets.banks);  // Lista de bancos
+
 // Hooks React
 const { value, setValue, data, loading } = reactExtra.useCepAuto("");
 ```
@@ -71,6 +76,8 @@ npx br-data-kit validate placa ABC1234            # true
 npx br-data-kit validate placa ABC1D23            # true (Mercosul)
 npx br-data-kit validate ie SP 110042490114       # true
 npx br-data-kit validate ie RJ 12345670           # true
+npx br-data-kit validate ie PR 1234567801         # true
+npx br-data-kit validate ie MG 1234567890123      # true
 
 # Máscaras
 npx br-data-kit mask cpf 39053344705              # 390.533.447-05
@@ -95,6 +102,55 @@ npx br-data-kit brl 1234.56                       # R$ 1.234,56
 # Ajuda
 npx br-data-kit --help
 ```
+
+## Funcionalidades
+
+### Validações
+- **CPF/CNPJ**: Validação completa com dígitos verificadores
+- **CEP**: Validação estrutural
+- **Telefone**: Validação de números brasileiros
+- **PIS/PASEP**: Validação com dígito verificador
+- **RENAVAM**: Validação de 11 dígitos
+- **CNH**: Validação estrutural
+- **Placa Mercosul**: Suporte a placas antigas (ABC-1234) e novas (ABC1D23)
+- **Inscrição Estadual (IE)**: Validação estrutural para todas as UFs, com dígitos verificadores oficiais para SP, RJ, PR, MG
+
+### Máscaras e Formatação
+- Máscaras automáticas para todos os documentos
+- Formatação BRL com opções de localização
+- Suporte a diferentes formatos de telefone
+
+### Busca de Dados (com cache)
+- **CEP**: Busca via BrasilAPI + ViaCEP com fallback automático
+- **CNPJ**: Busca de dados empresariais
+- Cache TTL configurável para otimizar performance
+
+### IBGE
+- Lista completa de municípios por UF
+- Dados atualizados diretamente da API do IBGE
+
+### Boleto Bancário
+- Validação de linha digitável
+- Parsing completo com valor, vencimento, beneficiário
+- Suporte a boletos bancários e concessionárias
+
+### Datasets Internos
+- Lista de códigos DDD brasileiros
+- Lista de bancos com códigos e nomes
+- Dados carregados automaticamente com cache em runtime
+
+### Hooks React
+- `useCepAuto`: Autocomplete de CEP com busca automática
+- `usePhoneMask`: Máscara automática para telefone
+- `useCurrencyMask`: Máscara para valores monetários
+
+### CLI Completo
+- Validação de todos os documentos
+- Aplicação de máscaras
+- Busca de CEP/CNPJ
+- Parsing de boletos
+- Formatação BRL
+- Zero dependências externas
 
 ## API Reference
 
@@ -194,89 +250,3 @@ Leia **CONTRIBUTING.md** e **CODE_OF_CONDUCT.md**. Issues e PRs são bem-vindos.
 ## Licença
 
 MIT
-
-## Instalação
-```bash
-npm i br-data-kit
-```
-
-## Uso rápido
-```ts
-import {
-  isCPF, maskCPF, isCNPJ, maskCNPJ, isCEP, maskCEP,
-  isPhoneBR, maskPhoneBR, isPIS, isRENAVAM, isCNH, isPlateBR, maskPlate,
-  parseBoleto, isValidBoletoLinhaDigitavel, formatBRL, fetchMunicipios, providers,
-  reactExtra
-} from "br-data-kit";
-
-isCPF("39053344705"); // true
-maskCPF("39053344705"); // "390.533.447-05"
-
-const cep = await providers.fetchCEP("01001000");
-const municipiosSP = await fetchMunicipios("SP");
-
-const { value, setValue, data, loading } = reactExtra.useCepAuto("");
-```
-
-## CLI (zero dependências)
-```bash
-npx br-data-kit validate cpf 39053344705
-npx br-data-kit validate cnpj 27865757000102
-npx br-data-kit mask phone 11988887777
-npx br-data-kit cep 01001000
-npx br-data-kit boleto validar "34191.79001 01043.510047 91020.150008 3 95500000002000"
-```
-
-
-## Inscrição Estadual (IE) — v1.2.0
-Suporte **estrutural** para IE por UF (tamanho e padrão), incluindo **SP/RJ/MG/PR** e demais UFs.
-> Nota: os cálculos de dígitos verificadores variam por UF. A API `isIEWithChecksum(uf, ie)` já existe para futura expansão; por ora ela usa a validação estrutural.
-
-Exemplos:
-```bash
-npx br-data-kit validate ie SP 110042490114
-npx br-data-kit validate ie SP P011004249011
-npx br-data-kit validate ie RJ 99999999
-```
-
-
-## IE com dígito verificador — v1.3.0
-- **RJ**: DV oficial implementado (mód 11, regra: 11 - (soma % 11), ≥10 → 0).
-- **PR**: 2 DVs oficiais implementados (mód 11 com pesos 3,2,7,6,5,4,3,2).
-- **SP** e **MG**: por enquanto **estrutural** (DV virá na próxima versão).
-
-Uso:
-```ts
-import { isIEWithChecksum } from "br-data-kit";
-
-isIEWithChecksum("RJ", "12345670"); // true/false
-isIEWithChecksum("PR", "1234567801"); // true/false
-```
-CLI:
-```bash
-npx br-data-kit validate ie RJ 12345670
-npx br-data-kit validate ie PR 1234567801
-```
-
-
-## v1.4.0 — Datasets, Hooks extras e Boleto Concessionária (estrutura)
-- **Datasets**: `datasets.ddd`, `datasets.banks` (JSON internos com cache do runtime).
-- **Hooks**: `reactPhone.usePhoneMask`, `reactCurrency.useCurrencyMask`.
-- **Boleto Concessionária (48 dígitos)**: validação estrutural por **4 blocos** (11+DV), 
-  com detecção de **módulo 10 ou 11** pelo 3º dígito (6/7 → mod10, 8/9 → mod11).  
-  > Observação: carteiras específicas podem ter exceções; casos especiais serão adicionados futuramente.
-
-
-## v1.5.0 — IE SP/MG com DV oficial + Vitest
-- **SP**: implementado cálculo **oficial** de ambos os DVs (9º e 12º), conforme SEFAZ-SP.
-- **MG**: implementados **dois DVs** conforme prática documentada (inserção de zero após 3º dígito, soma por pesos alternados 1/2 com soma de dígitos; segundo DV por módulo 11 com pesos [3,2,11,10,9,8,7,6,5,4,3,2]).
-- **Vitest**: suite mínima adicionada (`npm test`).
-
-```bash
-npm run build
-npm test
-```
-
-
-## CI
-Status: CI com GitHub Actions executando build e testes a cada PR/commit.
