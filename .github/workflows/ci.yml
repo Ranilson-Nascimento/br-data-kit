@@ -1,10 +1,11 @@
+name: CI
 
-name: ci
 on:
   push:
-    branches: [ main ]
+    branches: [ main, master ]
   pull_request:
-    branches: [ main ]
+    branches: [ main, master ]
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -13,7 +14,6 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-      - run: corepack enable || true
-      - run: npm ci
+      - run: npm ci || npm i
       - run: npm run build
       - run: npm test

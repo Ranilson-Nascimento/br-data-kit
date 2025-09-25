@@ -1,41 +1,22 @@
-
 # Contribuindo
 
-Obrigado por contribuir! Siga estes passos para uma contribuição suave:
+Obrigado por contribuir com o **br-data-kit**!
 
-## Como contribuir
-
-1. **Fork e branch**: Faça fork do repositório e crie um branch descritivo:
+## Como começar
+1. Faça um fork do repositório.
+2. Crie um branch: `git checkout -b feat/nome-da-feature`.
+3. Instale e rode os testes:
    ```bash
-   git checkout -b feat/minha-nova-feature
-   # ou
-   git checkout -b fix/correcao-bug
+   npm i
+   npm run build
+   npm test
    ```
+4. Abra um PR descritivo com screenshots e exemplos.
 
-2. **Desenvolvimento**:
-   - Instale dependências: `npm i`
-   - Rode testes: `npm test`
-   - Build: `npm run build`
-   - Formate código: `npm run format`
-   - Lint: `npm run lint`
+## Padrões
+- Typescript, **zero dependências** em runtime.
+- Commits semânticos (ex.: `feat:`, `fix:`, `docs:`).
+- Adicione/atualize testes quando alterar regras de validação.
 
-3. **Testes**: Garanta cobertura para novas funções. Use mocks para APIs externas.
-
-4. **Commits**: Use mensagens claras (ex: "feat: add support for telefone mask").
-
-5. **Pull Request**: Abra PR com descrição detalhada incluindo:
-   - Motivação da mudança
-   - Como testar
-   - Breaking changes (se houver)
-
-## Regras de código
-- TypeScript strict
-- ESLint + Prettier
-- Testes com Vitest
-- Documentação em português (README, comentários)
-
-## Issues
-- Bugs: Use template de bug
-- Features: Descreva claramente o problema e solução proposta
-
-Dúvidas? Abra uma issue!
+## Segurança
+Jamais inclua dados reais de pessoas. Use **exemplos fictícios**.
