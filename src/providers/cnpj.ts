@@ -1,7 +1,7 @@
 
-import { globalCache } from "../cache";
-import { httpJson } from "../http";
-import { onlyDigits } from "../validators";
+import { globalCache } from "../cache.js";
+import { httpJson } from "../http.js";
+import { onlyDigits } from "../validators.js";
 
 export type CnpjResponse = {
   cnpj: string;

@@ -1,0 +1,8 @@
+test/
+.github/
+scripts/
+*.log
+.DS_Store
+node_modules/
+src/**/*.spec.*
+coverage/

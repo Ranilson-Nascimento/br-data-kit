@@ -1,3 +1,3 @@
 
-export * from "./cep";
-export * from "./cnpj";
+export * from "./cep.js";
+export * from "./cnpj.js";
