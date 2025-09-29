@@ -249,16 +249,6 @@ try {
 
 ## Desenvolvimento
 
-## Demo interativa
-
-Veja uma demonstração interativa do pacote (validações, máscaras, CEP, formatação) hospedada em GitHub Pages: `https://ranilson-nascimento.github.io/br-data-kit/` (o site é servido a partir da pasta `docs/` no repositório).
-
-Se preferir rodar localmente, abra `docs/index.html` no seu navegador ou rode um servidor simples com:
-
-```bash
-# Python 3: python -m http.server 8000 --directory docs
-```
-
 ```bash
 npm i
 npm run build
@@ -273,3 +263,5 @@ Leia **CONTRIBUTING.md** e **CODE_OF_CONDUCT.md**. Issues e PRs são bem-vindos.
 ## Licença
 
 MIT
+t r i g g e r   p a g e s  
+ 
