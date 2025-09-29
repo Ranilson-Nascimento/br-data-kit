@@ -25,6 +25,32 @@ import {
 
 // Validações
 isCPF("39053344705"); // true
+# br-data-kit
+
+[![npm version](https://badge.fury.io/js/br-data-kit.svg)](https://badge.fury.io/js/br-data-kit)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Sponsor](https://img.shields.io/badge/Sponsor-%E2%9D%A4-red)](https://github.com/sponsors/Ranilson-Nascimento)
+
+Kit completo de utilitários brasileiros: **CPF/CNPJ/CEP**, **máscaras**, **formatação BRL**, **busca CEP/CNPJ** com cache (BrasilAPI + ViaCEP), **boleto bancário**, **placa Mercosul**, **RENAVAM**, **CNH**, **PIS/PASEP**, **IBGE (municípios)**, **hooks React/React Native** e **CLI** — _zero dependências_.
+
+## Instalação
+
+```bash
+npm i br-data-kit
+```
+
+## Uso rápido
+
+```ts
+import {
+  isCPF, maskCPF, isCNPJ, maskCNPJ, isCEP, maskCEP,
+  isPhoneBR, maskPhoneBR, isPIS, isRENAVAM, isCNH, isPlateBR, maskPlate,
+  parseBoleto, isValidBoletoLinhaDigitavel, formatBRL, fetchMunicipios, providers,
+  reactExtra
+} from "br-data-kit";
+
+// Validações
+isCPF("39053344705"); // true
 isCNPJ("27865757000102"); // true
 isCEP("01001000"); // true
 isPhoneBR("11988887777"); // true
@@ -71,7 +97,6 @@ Se preferir rodar localmente, abra `docs/index.html` no seu navegador ou rode um
 
 ```bash
 # Python 3: python -m http.server 8000 --directory docs
-```
 ```
 
 ## CLI (zero dependências)
@@ -188,8 +213,6 @@ maskCNPJ(value: string): string
 maskCEP(value: string): string
 maskPhoneBR(value: string): string
 maskPIS(value: string): string
-maskRENAVAM(value: string): string
-maskPlate(value: string): string
 ```
 
 ### Formatação
@@ -263,5 +286,3 @@ Leia **CONTRIBUTING.md** e **CODE_OF_CONDUCT.md**. Issues e PRs são bem-vindos.
 ## Licença
 
 MIT
- 
- 

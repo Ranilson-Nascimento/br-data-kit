@@ -1,4 +1,4 @@
-name: Deploy Pages
+name: pages-deploy
 
 on:
   push:
@@ -6,15 +6,38 @@ on:
   workflow_dispatch:
 
 jobs:
-  deploy:
+  build-and-upload:
     runs-on: ubuntu-latest
     permissions:
-      contents: write
+      contents: read
+      id-token: write
+      pages: write
     steps:
-      - uses: actions/checkout@v4
-      - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./docs
-          destination_dir: .
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build docs
+        run: npm run build || true
+
+      - name: Upload Pages Artifact
+        uses: actions/upload-pages-artifact@v1
+        with:
+          path: ./docs
+
+  deploy:
+    needs: build-and-upload
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    steps:
+      - name: Deploy to GitHub Pages
+        uses: actions/deploy-pages@v1
