@@ -1,0 +1,69 @@
+{
+  "name": "br-data-kit",
+  "version": "2.0.1",
+  "description": "Kit completo de utilitários brasileiros: validação, máscaras, formatação BRL, CEP/CNPJ com cache e fallback, IBGE, boleto, hooks React Native e CLI — zero dependências.",
+  "keywords": [
+    "boleto",
+    "br-data",
+    "brasil",
+    "brl",
+    "cep",
+    "cli",
+    "cnh",
+    "cnpj",
+    "cpf",
+    "documentos-br",
+    "ibge",
+    "ie",
+    "pispasep",
+    "placa",
+    "react-hooks",
+    "react-native",
+    "renavam"
+  ],
+  "license": "MIT",
+  "author": "Ranilson Nascimento",
+  "type": "module",
+  "main": "dist/index.cjs",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "files": [
+    "dist",
+    "bin"
+  ],
+  "bin": {
+    "br-data-kit": "./bin/br-data-kit.js"
+  },
+  "scripts": {
+    "build": "tsc && node ./scripts/cjs.mjs",
+    "clean": "rimraf dist || rm -rf dist",
+    "prepare": "npm run build",
+    "test": "vitest run",
+    "dev": "npx serve docs -p 8000"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.7.5",
+    "@types/react": "^18.3.12",
+    "typescript": "^5.6.3",
+    "vitest": "^1.6.0",
+    "serve": "^14.1.1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Ranilson-Nascimento/br-data-kit.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Ranilson-Nascimento/br-data-kit/issues"
+  },
+  "homepage": "https://github.com/Ranilson-Nascimento/br-data-kit#readme"
+}
