@@ -58,18 +58,20 @@ import { datasets } from "br-data-kit";
 console.log(datasets.ddd);    // Lista de códigos DDD
 console.log(datasets.banks);  // Lista de bancos
 
+```ts
 // Hooks React
 const { value, setValue, data, loading } = reactExtra.useCepAuto("");
 ```
 
 ## Demo interativa
 
-Veja uma demonstração interativa do pacote (validações, máscaras, CEP, formatação) hospedada em GitHub Pages: `https://ranilson-nascimento.github.io/br-data-kit/` (o site é servido a partir da pasta `docs/` no repositório).
+Veja uma demonstração interativa do pacote (validações, máscaras, CEP, formatação) hospedada em GitHub Pages: [Demo ao vivo](https://ranilson-nascimento.github.io/br-data-kit/) (o site é servido a partir da pasta `docs/` no repositório).
 
 Se preferir rodar localmente, abra `docs/index.html` no seu navegador ou rode um servidor simples com:
 
 ```bash
 # Python 3: python -m http.server 8000 --directory docs
+```
 ```
 
 ## CLI (zero dependências)
