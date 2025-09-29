@@ -263,5 +263,5 @@ Leia **CONTRIBUTING.md** e **CODE_OF_CONDUCT.md**. Issues e PRs são bem-vindos.
 ## Licença
 
 MIT
-t r i g g e r   p a g e s  
+ 
  
