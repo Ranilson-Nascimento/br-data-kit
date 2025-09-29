@@ -1,6 +1,6 @@
 {
   "name": "br-data-kit",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Kit completo de utilitários brasileiros: validação, máscaras, formatação BRL, CEP/CNPJ com cache e fallback, IBGE, boleto, hooks React Native e CLI — zero dependências.",
   "keywords": [
     "boleto",
