@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>br-data-kit — Demo</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <header class="hero">
+    <div class="hero-inner">
+      <img src="https://raw.githubusercontent.com/Ranilson-Nascimento/br-data-kit/main/docs/logo.png" alt="br-data-kit" class="logo" onerror="this.style.display='none'">
+      <h1>br-data-kit</h1>
+      <p>Kit de utilitários brasileiros — validação, máscaras, formatação, buscas com cache e hooks.</p>
+      <p class="cta"><a href="https://www.npmjs.com/package/br-data-kit" target="_blank" rel="noopener">Instalar no npm</a> · <a href="https://github.com/Ranilson-Nascimento/br-data-kit" target="_blank" rel="noopener">Repo</a></p>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="card">
+      <h2>Validações & Máscaras</h2>
+      <div class="grid">
+        <div>
+          <label>CPF</label>
+          <input id="cpf-in" placeholder="39053344705" />
+          <div class="actions">
+            <button id="cpf-mask">Aplicar máscara</button>
+            <button id="cpf-validate">Validar</button>
+          </div>
+          <div class="result" id="cpf-result"></div>
+        </div>
+
+        <div>
+          <label>CNPJ</label>
+          <input id="cnpj-in" placeholder="27865757000102" />
+          <div class="actions">
+            <button id="cnpj-mask">Aplicar máscara</button>
+            <button id="cnpj-validate">Validar</button>
+          </div>
+          <div class="result" id="cnpj-result"></div>
+        </div>
+
+        <div>
+          <label>Telefone</label>
+          <input id="phone-in" placeholder="11988887777" />
+          <div class="actions">
+            <button id="phone-mask">Aplicar máscara</button>
+            <button id="phone-validate">Validar</button>
+          </div>
+          <div class="result" id="phone-result"></div>
+        </div>
+
+        <div>
+          <label>Valor (BRL)</label>
+          <input id="money-in" placeholder="1234.56" />
+          <div class="actions">
+            <button id="money-format">Formatar</button>
+          </div>
+          <div class="result" id="money-result"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Busca CEP</h2>
+      <div class="grid-cep">
+        <input id="cep-in" placeholder="01001000" />
+        <button id="cep-search">Buscar CEP</button>
+      </div>
+      <pre id="cep-result" class="result"></pre>
+    </section>
+
+    <section class="card small">
+      <h2>Exemplos rápidos</h2>
+      <pre class="code-block">import { isCPF, maskCPF, providers, formatBRL } from 'br-data-kit';
+
+isCPF('39053344705'); // true
+maskCPF('39053344705'); // "390.533.447-05"
+formatBRL(1234.56); // "R$ 1.234,56"</pre>
+    </section>
+
+    <section class="card">
+      <h2>Boleto (linha digitável)</h2>
+      <input id="boleto-in" placeholder="34191.79001 01043.510047 91020.150008 3 95500000002000" />
+      <div class="actions">
+        <button id="boleto-parse">Parse</button>
+        <button id="boleto-validate">Validar</button>
+      </div>
+      <pre id="boleto-result" class="result"></pre>
+    </section>
+
+    <section class="card">
+      <h2>Buscar CNPJ</h2>
+      <div class="grid-cep">
+        <input id="cnpj-lookup-in" placeholder="27865757000102" />
+        <button id="cnpj-lookup">Buscar CNPJ</button>
+      </div>
+      <pre id="cnpj-lookup-result" class="result"></pre>
+    </section>
+
+    <section class="card">
+      <h2>IBGE — Municípios</h2>
+      <div class="grid-cep">
+        <input id="ibge-uf" placeholder="SP" />
+        <button id="ibge-search">Buscar Municípios</button>
+      </div>
+      <pre id="ibge-result" class="result"></pre>
+    </section>
+
+    <section class="card">
+      <h2>Datasets (internos)</h2>
+      <div class="grid">
+        <div>
+          <h3>DDD</h3>
+          <pre id="dataset-ddd" class="result"></pre>
+        </div>
+        <div>
+          <h3>Bancos</h3>
+          <pre id="dataset-banks" class="result"></pre>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>IE — Validação por UF</h2>
+      <div class="grid-cep">
+        <input id="ie-uf" placeholder="SP" />
+        <input id="ie-in" placeholder="110042490114" />
+        <button id="ie-validate">Validar IE</button>
+      </div>
+      <div id="ie-result" class="result"></div>
+    </section>
+
+    <section class="card">
+      <h2>Playground avançado</h2>
+      <p class="muted">Selecione uma função exportada e chame com argumentos em formato JSON (ex: ["01001000"]).</p>
+      <div class="grid-cep">
+        <select id="play-fn"></select>
+        <input id="play-args" placeholder='Ex: ["01001000"]' />
+        <button id="play-run">Run</button>
+      </div>
+      <pre id="play-result" class="result"></pre>
+    </section>
+
+    <footer class="footer">
+      <p>Desenvolvido por <a href="https://github.com/Ranilson-Nascimento" target="_blank">Ranilson Nascimento</a> · <a href="https://github.com/sponsors/Ranilson-Nascimento">Patrocine</a></p>
+    </footer>
+  </main>
+
+  <script type="module" src="./demo.js"></script>
+</body>
+</html>
