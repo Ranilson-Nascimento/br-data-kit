@@ -13,11 +13,22 @@
       <h1>br-data-kit</h1>
       <p>Kit de utilitários brasileiros — validação, máscaras, formatação, buscas com cache e hooks.</p>
       <p class="cta"><a href="https://www.npmjs.com/package/br-data-kit" target="_blank" rel="noopener">Instalar no npm</a> · <a href="https://github.com/Ranilson-Nascimento/br-data-kit" target="_blank" rel="noopener">Repo</a></p>
+      <div class="theme-toggle">
+        <span>Tema</span>
+        <button id="theme-toggle-btn">🌙</button>
+      </div>
     </div>
   </header>
 
   <main class="container">
-    <section class="card">
+    <div class="tabs">
+      <button class="tab tab-active" data-tab-target="visao">Visão geral</button>
+      <button class="tab" data-tab-target="dados">Dados externos</button>
+      <button class="tab" data-tab-target="form-react">Formulários React</button>
+      <button class="tab" data-tab-target="playground">Playground</button>
+    </div>
+
+    <section class="card" data-tab="visao">
       <h2>Validações & Máscaras</h2>
       <div class="grid">
         <div>
@@ -58,10 +69,49 @@
           </div>
           <div class="result" id="money-result"></div>
         </div>
+
+        <div>
+          <label>PIS/PASEP</label>
+          <input id="pis-in" placeholder="12345678901" />
+          <div class="actions">
+            <button id="pis-mask">Aplicar máscara</button>
+            <button id="pis-validate">Validar</button>
+          </div>
+          <div class="result" id="pis-result"></div>
+        </div>
+
+        <div>
+          <label>RENAVAM</label>
+          <input id="renavam-in" placeholder="12345678901" />
+          <div class="actions">
+            <button id="renavam-mask">Aplicar máscara</button>
+            <button id="renavam-validate">Validar</button>
+          </div>
+          <div class="result" id="renavam-result"></div>
+        </div>
+
+        <div>
+          <label>CNH</label>
+          <input id="cnh-in" placeholder="12345678901" />
+          <div class="actions">
+            <button id="cnh-validate">Validar</button>
+          </div>
+          <div class="result" id="cnh-result"></div>
+        </div>
+
+        <div>
+          <label>Placa (BR / Mercosul)</label>
+          <input id="plate-in" placeholder="ABC1D23" />
+          <div class="actions">
+            <button id="plate-mask">Normalizar</button>
+            <button id="plate-validate">Validar</button>
+          </div>
+          <div class="result" id="plate-result"></div>
+        </div>
       </div>
     </section>
 
-    <section class="card">
+    <section class="card" data-tab="dados">
       <h2>Busca CEP</h2>
       <div class="grid-cep">
         <input id="cep-in" placeholder="01001000" />
@@ -70,16 +120,90 @@
       <pre id="cep-result" class="result"></pre>
     </section>
 
-    <section class="card small">
+    <section class="card small" data-tab="visao">
       <h2>Exemplos rápidos</h2>
-      <pre class="code-block">import { isCPF, maskCPF, providers, formatBRL } from 'br-data-kit';
+      <div class="code-toolbar">
+      <button class="copy-btn" data-copy="snippet-basic">Copiar</button>
+      <pre class="code-block" id="snippet-basic">import { isCPF, maskCPF, providers, formatBRL, reactExtra } from 'br-data-kit';
 
 isCPF('39053344705'); // true
 maskCPF('39053344705'); // "390.533.447-05"
-formatBRL(1234.56); // "R$ 1.234,56"</pre>
+formatBRL(1234.56); // "R$ 1.234,56"
+
+// React / React Native
+const cep = reactExtra.useCep(cepInput);
+// cep.masked, cep.data, cep.loading, cep.error
+
+const moeda = reactExtra.useCurrencyMask(0);
+// moeda.masked ("R$ 0,00"), moeda.raw (number)</pre>
+      </div>
     </section>
 
-    <section class="card">
+    <section class="card" data-tab="visao">
+      <h2>Documentação rápida</h2>
+      <p class="muted">Resumo das principais formas de usar o pacote no dia a dia.</p>
+      <h3>Instalação</h3>
+      <pre class="code-block">npm i br-data-kit</pre>
+      <h3>Uso básico em TypeScript/JavaScript</h3>
+      <pre class="code-block">import {
+  isCPF, maskCPF, isCNPJ, maskCNPJ,
+  isCEP, maskCEP, formatBRL, providers
+} from "br-data-kit";
+
+isCPF("39053344705");
+const masked = maskCNPJ("27865757000102");
+const valor = formatBRL(1234.56);
+
+const cep = await providers.fetchCEP("01001000");
+      </pre>
+      <h3>Hooks React / React Native</h3>
+      <pre class="code-block">import { reactExtra } from "br-data-kit";
+
+const cep = reactExtra.useCep(cepInput);
+const cnpj = reactExtra.useCnpj(cnpjInput);
+const phone = reactExtra.usePhoneMask("");
+const moeda = reactExtra.useCurrencyMask(0);
+      </pre>
+      <h3>CLI</h3>
+      <pre class="code-block">npx br-data-kit validate cpf 39053344705
+npx br-data-kit cep 01001000
+npx br-data-kit brl 1234.56
+      </pre>
+      <p class="muted">
+        Para detalhes completos consulte o README no GitHub:
+        <a href="https://github.com/Ranilson-Nascimento/br-data-kit" target="_blank" rel="noopener">
+          documentação completa no GitHub
+        </a>.
+      </p>
+    </section>
+
+    <section class="card" data-tab="form-react">
+      <h2>Hooks React / React Native</h2>
+      <p class="muted">
+        Pensado para formulários no Brasil: CEP/CNPJ com autocomplete e fallback de providers,
+        telefone e moeda BRL com máscara controlada.
+      </p>
+      <div class="code-toolbar">
+      <button class="copy-btn" data-copy="snippet-hooks">Copiar</button>
+      <pre class="code-block" id="snippet-hooks">
+import { reactExtra } from "br-data-kit";
+
+// CEP com debounce e busca automática (BrasilAPI + ViaCEP)
+const { data, loading, error, masked } = reactExtra.useCep(cepInput);
+
+// CNPJ com fallback (BrasilAPI + Receitaws)
+const { data: cnpj, loading: loadingCnpj } = reactExtra.useCnpj(cnpjInput);
+
+// Telefone com máscara dinâmica
+const phone = reactExtra.usePhoneMask("");
+
+// Moeda BRL com valor numérico
+const moeda = reactExtra.useCurrencyMask(0);
+      </pre>
+      </div>
+    </section>
+
+    <section class="card" data-tab="dados">
       <h2>Boleto (linha digitável)</h2>
       <input id="boleto-in" placeholder="34191.79001 01043.510047 91020.150008 3 95500000002000" />
       <div class="actions">
@@ -89,7 +213,7 @@ formatBRL(1234.56); // "R$ 1.234,56"</pre>
       <pre id="boleto-result" class="result"></pre>
     </section>
 
-    <section class="card">
+    <section class="card" data-tab="dados">
       <h2>Buscar CNPJ</h2>
       <div class="grid-cep">
         <input id="cnpj-lookup-in" placeholder="27865757000102" />
@@ -98,7 +222,7 @@ formatBRL(1234.56); // "R$ 1.234,56"</pre>
       <pre id="cnpj-lookup-result" class="result"></pre>
     </section>
 
-    <section class="card">
+    <section class="card" data-tab="dados">
       <h2>IBGE — Municípios</h2>
       <div class="grid-cep">
         <input id="ibge-uf" placeholder="SP" />
@@ -107,7 +231,7 @@ formatBRL(1234.56); // "R$ 1.234,56"</pre>
       <pre id="ibge-result" class="result"></pre>
     </section>
 
-    <section class="card">
+    <section class="card" data-tab="dados">
       <h2>Datasets (internos)</h2>
       <div class="grid">
         <div>
@@ -121,7 +245,92 @@ formatBRL(1234.56); // "R$ 1.234,56"</pre>
       </div>
     </section>
 
-    <section class="card">
+    <section class="card" data-tab="form-react">
+      <h2>Formulário Brasil (demo visual)</h2>
+      <p class="muted">
+        Exemplo de fluxo típico de cadastro/checkout com dados brasileiros.
+        Em um app React/React Native, você faria isso usando os hooks do pacote.
+      </p>
+      <div class="grid">
+        <div>
+          <label>CEP</label>
+          <input id="form-cep" placeholder="01001000" />
+          <div class="result" id="form-cep-result"></div>
+        </div>
+        <div>
+          <label>CNPJ</label>
+          <input id="form-cnpj" placeholder="27865757000102" />
+          <div class="result" id="form-cnpj-result"></div>
+        </div>
+        <div>
+          <label>Telefone</label>
+          <input id="form-phone" placeholder="11988887777" />
+          <div class="result" id="form-phone-result"></div>
+        </div>
+        <div>
+          <label>Valor (BRL)</label>
+          <input id="form-money" placeholder="199.90" />
+          <div class="result" id="form-money-result"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="card" data-tab="visao">
+      <h2>Mapa completo da API</h2>
+      <p class="muted">Visão geral de tudo o que o pacote oferece.</p>
+
+      <h3>Validações</h3>
+      <pre class="code-block">isCPF(value: string): boolean
+isCNPJ(value: string): boolean
+isCEP(value: string): boolean
+isPhoneBR(value: string): boolean
+isPIS(value: string): boolean
+isRENAVAM(value: string): boolean
+isCNH(value: string): boolean
+isPlateBR(value: string): boolean
+isIE(uf: string, value: string): boolean
+isIEWithChecksum(uf: string, value: string): boolean
+      </pre>
+
+      <h3>Máscaras & formatação</h3>
+      <pre class="code-block">maskCPF(value: string): string
+maskCNPJ(value: string): string
+maskCEP(value: string): string
+maskPhoneBR(value: string): string
+maskPIS(value: string): string
+maskRENAVAM(value: string): string
+maskPlate(value: string): string
+formatBRL(value: number, opts?: Intl.NumberFormatOptions): string
+      </pre>
+
+      <h3>Providers & dados externos</h3>
+      <pre class="code-block">providers.fetchCEP(cep: string, opts?: { ttlMs?: number }): Promise&lt;CepResponse&gt;
+providers.fetchCNPJ(cnpj: string, opts?: { ttlMs?: number; receitawsUrl?: string }): Promise&lt;CnpjResponse&gt;
+fetchMunicipios(uf: string): Promise&lt;Municipio[]&gt;
+      </pre>
+
+      <h3>Boleto bancário</h3>
+      <pre class="code-block">isValidBoletoLinhaDigitavel(linha: string): boolean
+parseBoleto(linha: string): BoletoInfo
+      </pre>
+
+      <h3>Datasets internos</h3>
+      <pre class="code-block">import { datasets } from "br-data-kit";
+datasets.ddd   // lista de DDDs
+datasets.banks // lista de bancos
+      </pre>
+
+      <h3>Hooks React / React Native</h3>
+      <pre class="code-block">reactExtra.useCep(input: string, opts?: { ttlMs?: number })
+reactExtra.useCnpj(input: string, opts?: { ttlMs?: number; receitawsUrl?: string })
+reactExtra.useCepAuto(initial?: string, debounceMs?: number)
+reactExtra.usePhoneMask(initial?: string)
+reactExtra.useCurrencyMask(initial?: number | string)
+reactExtra.useBrField("cpf" | "cnpj" | "cep" | "phone" | "currency")
+      </pre>
+    </section>
+
+    <section class="card" data-tab="dados">
       <h2>IE — Validação por UF</h2>
       <div class="grid-cep">
         <input id="ie-uf" placeholder="SP" />
@@ -131,13 +340,18 @@ formatBRL(1234.56); // "R$ 1.234,56"</pre>
       <div id="ie-result" class="result"></div>
     </section>
 
-    <section class="card">
+    <section class="card" data-tab="playground">
       <h2>Playground avançado</h2>
       <p class="muted">Selecione uma função exportada e chame com argumentos em formato JSON (ex: ["01001000"]).</p>
       <div class="grid-cep">
         <select id="play-fn"></select>
         <input id="play-args" placeholder='Ex: ["01001000"]' />
         <button id="play-run">Run</button>
+      </div>
+      <div class="actions" style="margin-top:8px; gap: 8px;">
+        <button id="play-example-cep">Exemplo CEP</button>
+        <button id="play-example-cnpj">Exemplo CNPJ</button>
+        <button id="play-example-brl">Exemplo BRL</button>
       </div>
       <pre id="play-result" class="result"></pre>
     </section>
