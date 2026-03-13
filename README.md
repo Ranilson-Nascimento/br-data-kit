@@ -21,7 +21,7 @@ Se preferir rodar localmente, abra `docs/index.html` no seu navegador ou rode um
 ```bash
 # Python 3: python -m http.server 8000 --directory docs
 ```
-## Uso rápido
+## Uso rápido (sem enrolação)
 
 ```ts
 import {
@@ -67,11 +67,21 @@ console.log(datasets.ddd);    // Lista de códigos DDD
 console.log(datasets.banks);  // Lista de bancos
 
 ```ts
-// Hooks React
-const { value, setValue, data, loading } = reactExtra.useCepAuto("");
+// Hooks React (exemplos principais)
+// CEP com autocomplete e debounce
+const { data, loading, error, masked } = reactExtra.useCep(cepInput);
+
+// CNPJ com fallback automático (BrasilAPI + Receitaws)
+const { data: cnpj, loading: loadingCnpj, error: errorCnpj } = reactExtra.useCnpj(cnpjInput);
+
+// Telefone com máscara dinâmica
+const { value: phoneMasked, setValue: setPhone } = reactExtra.usePhoneMask("");
+
+// Moeda BRL com máscara e valor numérico
+const { value, masked, raw, setValue } = reactExtra.useCurrencyMask(0);
 ```
 
-## CLI (zero dependências)
+## CLI (zero dependências, ideal pra scripts)
 
 ```bash
 # Validações
@@ -150,9 +160,11 @@ npx br-data-kit --help
 - Dados carregados automaticamente com cache em runtime
 
 ### Hooks React
-- `useCepAuto`: Autocomplete de CEP com busca automática
-- `usePhoneMask`: Máscara automática para telefone
-- `useCurrencyMask`: Máscara para valores monetários
+- `useCepAuto`: Autocomplete de CEP simples com busca automática
+- `useCep`: Hook completo de CEP com debounce, loading, erro e TTL configurável
+- `useCnpj`: Hook para CNPJ com fallback BrasilAPI + Receitaws, debounce e TTL configurável
+- `usePhoneMask`: Máscara automática para telefone (ideal para inputs controlados)
+- `useCurrencyMask`: Máscara para valores monetários em BRL, retornando valor formatado e numérico
 
 ### CLI Completo
 - Validação de todos os documentos
@@ -162,7 +174,150 @@ npx br-data-kit --help
 - Formatação BRL
 - Zero dependências externas
 
+## Receitas prontas (copiar e colar)
+
+### Receita 1: Checkout PF (CPF + endereço + total)
+
+Fluxo clássico de e-commerce BR: o usuário digita CPF, CEP e valor da compra; você mascara, valida e ainda busca o endereço automaticamente.
+
+```tsx
+import { useState } from "react";
+import { reactExtra, providers, formatBRL } from "br-data-kit";
+
+export function CheckoutPF() {
+  const [cpfInput, setCpfInput] = useState("");
+  const [cepInput, setCepInput] = useState("");
+  const [valorRaw, setValorRaw] = useState(0);
+
+  const cpf = reactExtra.useBrField("cpf", cpfInput);
+  const cep = reactExtra.useCep(cepInput);
+  const moeda = reactExtra.useCurrencyMask(valorRaw);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!cpf.valid) {
+      alert("CPF inválido");
+      return;
+    }
+    const endereco = cep.data || (await providers.fetchCEP(cepInput));
+    alert(
+      `Enviando pedido de ${moeda.raw} para ${endereco.street}, ${endereco.city}/${endereco.state}`
+    );
+  };
+
+  return (
+    <form onSubmit={handleSubmit}>
+      <label>CPF</label>
+      <input
+        value={cpf.masked}
+        onChange={(e) => {
+          cpf.onChange(e.target.value);
+          setCpfInput(e.target.value);
+        }}
+        placeholder="000.000.000-00"
+      />
+      {cpf.error && <small>{cpf.error}</small>}
+
+      <label>CEP</label>
+      <input
+        value={cep.masked}
+        onChange={(e) => setCepInput(e.target.value)}
+        placeholder="00000-000"
+      />
+      {cep.loading && <small>Buscando endereço...</small>}
+      {cep.data && <small>{cep.data.street} — {cep.data.city}/{cep.data.state}</small>}
+
+      <label>Valor</label>
+      <input
+        value={moeda.value}
+        onChange={(e) => moeda.setValue(e.target.value)}
+        placeholder="R$ 0,00"
+      />
+      <p>Total bruto: {formatBRL(moeda.raw)}</p>
+
+      <button type="submit">Fechar pedido</button>
+    </form>
+  );
+}
+```
+
+### Receita 2: Cadastro PJ simples (CNPJ + IE + endereço)
+
+```tsx
+import { useState } from "react";
+import { reactExtra, isIE, providers } from "br-data-kit";
+
+export function CadastroPJ() {
+  const [cnpjInput, setCnpjInput] = useState("");
+  const [ieUf, setIeUf] = useState("SP");
+  const [ieValue, setIeValue] = useState("");
+  const [cepInput, setCepInput] = useState("");
+
+  const cnpj = reactExtra.useCnpj(cnpjInput);
+  const cep = reactExtra.useCep(cepInput);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!isIE(ieUf, ieValue)) {
+      alert("Inscrição estadual inválida para a UF informada");
+      return;
+    }
+    const endereco = cep.data || (await providers.fetchCEP(cepInput));
+    alert(
+      `Empresa ${cnpj.data?.razao_social || "sem nome"} em ${endereco.city}/${endereco.state}`
+    );
+  };
+
+  return (
+    <form onSubmit={handleSubmit}>
+      <label>CNPJ</label>
+      <input
+        value={cnpjInput}
+        onChange={(e) => setCnpjInput(e.target.value)}
+        placeholder="00.000.000/0000-00"
+      />
+      {cnpj.data && <small>{cnpj.data.razao_social}</small>}
+
+      <label>UF / Inscrição Estadual</label>
+      <div style={{ display: "flex", gap: 8 }}>
+        <input
+          value={ieUf}
+          onChange={(e) => setIeUf(e.target.value.toUpperCase())}
+          placeholder="SP"
+          style={{ width: 60 }}
+        />
+        <input
+          value={ieValue}
+          onChange={(e) => setIeValue(e.target.value)}
+          placeholder="IE"
+        />
+      </div>
+
+      <label>CEP</label>
+      <input
+        value={cep.masked}
+        onChange={(e) => setCepInput(e.target.value)}
+        placeholder="00000-000"
+      />
+      {cep.data && <small>{cep.data.street} — {cep.data.city}/{cep.data.state}</small>}
+
+      <button type="submit">Cadastrar empresa</button>
+    </form>
+  );
+}
+```
+
 ## API Reference
+
+### Tipos principais (TypeScript)
+```ts
+// Tipos utilitários exportados
+type CepResponse = import("br-data-kit").CepResponse;
+type CnpjResponse = import("br-data-kit").CnpjResponse;
+type BoletoInfo = import("br-data-kit").BoletoInfo;
+type UF = import("br-data-kit").UF;
+type UseCurrencyMaskResult = import("br-data-kit").UseCurrencyMaskResult;
+```
 
 ### Validações
 ```ts
@@ -220,14 +375,164 @@ datasets.banks   // Lista de bancos
 ```tsx
 import { reactExtra } from "br-data-kit";
 
-// CEP com autocomplete
-const { value, setValue, data, loading, error } = reactExtra.useCepAuto("");
+// CEP com autocomplete + dados remotos (BrasilAPI/ViaCEP)
+const { data, loading, error, masked } = reactExtra.useCep(cepInput);
 
-// Máscara telefone
-const { value, setValue, masked } = reactExtra.usePhoneMask("");
+// CNPJ com fallback (BrasilAPI + Receitaws)
+const { data: cnpj, loading: loadingCnpj, error: errorCnpj } = reactExtra.useCnpj(cnpjInput);
 
-// Máscara moeda
-const { value, setValue, masked, raw } = reactExtra.useCurrencyMask(0);
+// Máscara telefone controlada
+const phone = reactExtra.usePhoneMask("");
+// phone.value => string mascarada, phone.setValue(next: string)
+
+// Máscara moeda BRL
+const moeda = reactExtra.useCurrencyMask(0);
+// moeda.value / moeda.masked => "R$ 1.234,56"
+// moeda.raw => 1234.56 (number)
+// moeda.setValue(199.9) ou moeda.setValue("199,90")
+
+// Campo de alto nível unificado (máscara + validação)
+const cpfField = reactExtra.useBrField("cpf");
+// cpfField.masked, cpfField.valid, cpfField.error, cpfField.onChange(next: string)
+// Ideal para integrar com bibliotecas de formulário (react-hook-form, Formik, etc.)
+```
+
+### Exemplo de formulário React completo (Brasil)
+
+```tsx
+import { useState } from "react";
+import { reactExtra } from "br-data-kit";
+
+export function FormularioBrasil() {
+  const [cepInput, setCepInput] = useState("");
+  const [cnpjInput, setCnpjInput] = useState("");
+  const [phoneInput, setPhoneInput] = useState("");
+
+  const cep = reactExtra.useCep(cepInput);
+  const cnpj = reactExtra.useCnpj(cnpjInput);
+  const phone = reactExtra.usePhoneMask(phoneInput);
+  const moeda = reactExtra.useCurrencyMask(0);
+
+  return (
+    <form>
+      <input
+        placeholder="CEP"
+        value={cep.masked}
+        onChange={(e) => setCepInput(e.target.value)}
+      />
+      {cep.loading && <span>Buscando endereço...</span>}
+      {cep.data && <span>{cep.data.city} - {cep.data.state}</span>}
+
+      <input
+        placeholder="CNPJ"
+        value={cnpjInput}
+        onChange={(e) => setCnpjInput(e.target.value)}
+      />
+      {cnpj.data && <span>{cnpj.data.razao_social}</span>}
+
+      <input
+        placeholder="Telefone"
+        value={phone.value}
+        onChange={(e) => phone.setValue(e.target.value)}
+      />
+
+      <input
+        placeholder="Valor"
+        value={moeda.value}
+        onChange={(e) => moeda.setValue(e.target.value)}
+      />
+    </form>
+  );
+}
+```
+
+### Integração com `react-hook-form` (sugestão de uso)
+
+O pacote não depende de nenhuma lib de formulário, mas você pode combiná-lo facilmente com `react-hook-form` usando `useBrField`:
+
+```tsx
+import { useForm, Controller } from "react-hook-form";
+import { reactExtra } from "br-data-kit";
+
+type FormData = {
+  cpf: string;
+  cep: string;
+  valor: string;
+};
+
+export function FormularioComReactHookForm() {
+  const { control, handleSubmit } = useForm<FormData>();
+
+  const onSubmit = (data: FormData) => {
+    console.log("Enviado:", data);
+  };
+
+  return (
+    <form onSubmit={handleSubmit(onSubmit)}>
+      <Controller
+        name="cpf"
+        control={control}
+        defaultValue=""
+        render={({ field }) => {
+          const cpf = reactExtra.useBrField("cpf", field.value);
+          return (
+            <div>
+              <input
+                placeholder="CPF"
+                value={cpf.masked}
+                onChange={(e) => {
+                  cpf.onChange(e.target.value);
+                  field.onChange(cpf.raw);
+                }}
+              />
+              {cpf.error && <span>{cpf.error}</span>}
+            </div>
+          );
+        }}
+      />
+
+      <Controller
+        name="cep"
+        control={control}
+        defaultValue=""
+        render={({ field }) => {
+          const cep = reactExtra.useBrField("cep", field.value);
+          return (
+            <input
+              placeholder="CEP"
+              value={cep.masked}
+              onChange={(e) => {
+                cep.onChange(e.target.value);
+                field.onChange(cep.raw);
+              }}
+            />
+          );
+        }}
+      />
+
+      <Controller
+        name="valor"
+        control={control}
+        defaultValue=""
+        render={({ field }) => {
+          const moeda = reactExtra.useBrField("currency", field.value);
+          return (
+            <input
+              placeholder="Valor"
+              value={moeda.masked}
+              onChange={(e) => {
+                moeda.onChange(e.target.value);
+                field.onChange(String(moeda.raw));
+              }}
+            />
+          );
+        }}
+      />
+
+      <button type="submit">Enviar</button>
+    </form>
+  );
+}
 ```
 
 ## Tratamento de Erros

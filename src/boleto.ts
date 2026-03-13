@@ -1,7 +1,7 @@
 
 import { onlyDigits } from './validators.js';
 
-type BoletoInfo = {
+export type BoletoInfo = {
   barCode: string;
   amount?: number;
   expirationDate?: Date;
